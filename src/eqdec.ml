@@ -68,7 +68,8 @@ let inductive_info sigma ((mind, _ as ind),u) =
     in
     let case c pred brs =
       let ci = make_case_info (Global.env ()) (mind,i) Constr.MatchStyle in
-      mkCase (EConstr.contract_case env sigma (ci, (pred, ERelevance.relevant), Constr.NoInvert, c, brs))
+      let pred_sort = Retyping.get_sort_of env sigma pred in
+      mkCase (EConstr.contract_case env sigma (ci, (pred, pred_sort), Constr.NoInvert, c, brs))
       (* TODO relevance / case inversion *)
     in
       { ind_name = indname;

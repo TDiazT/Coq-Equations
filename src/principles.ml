@@ -1666,6 +1666,7 @@ let build_equations ~pm with_ind env evd ?(alias:alias option) rec_info progs =
                                                                                mkSort (ESorts.make ind_sort))) sign);
                 mind_entry_consnames = consnames;
                 mind_entry_lc = constructors;
+                mind_entry_proj_annot = None;
               }
     in ((entry, sign, arity) :: inds, univs, max_sort ind_sort sorts)
   in

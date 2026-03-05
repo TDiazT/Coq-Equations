@@ -175,7 +175,7 @@ let depcase ~poly ((mind, i as ind), u) =
   in
   let paramsinst = extended_rel_vect (2 + nargs + nconstrs) params in
   let ty = (annot_of_context ctxpred, app) in
-  let case = mkCase (ci, EInstance.empty, paramsinst, (ty, relevance), NoInvert, mkRel 1, bodies) in
+  let case = mkCase (ci, EInstance.empty, paramsinst, (ty, s), NoInvert, mkRel 1, bodies) in
   let xty = obj 1 in
   let xid = Namegen.named_hd (Global.env ()) !evd xty Anonymous in
   let body =

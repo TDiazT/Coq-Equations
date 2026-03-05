@@ -190,7 +190,7 @@ Proof.
   intros e'. destruct (uip 1 e'). intros e ; exact e.
 Defined.
 
-Lemma pr2_uip_refl@{i|} {A : Type@{i}}
+Lemma pr2_uip_refl@{i +|+} {A : Type@{i}}
       {E : UIP A} (P : A -> Type@{i}) (x : A) (y : P x) :
   pr2_uip@{i} (@id_refl _ (x, y)) = 1.
 Proof.

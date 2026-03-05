@@ -148,7 +148,8 @@ let derive_subterm ~pm env sigma ~poly (ind, u as indu) =
       { mind_entry_typename = subtermid;
         mind_entry_arity = EConstr.to_constr sigma arity;
         mind_entry_consnames = consnames;
-        mind_entry_lc = constructors }
+        mind_entry_lc = constructors;
+        mind_entry_proj_annot = None }
   in
   let univs, ubinders = Evd.univ_entry ~poly sigma in
   let uctx = match univs with
@@ -291,6 +292,11 @@ let derive_below env sigma ~poly (ind,univ as indu) =
   let ctx = of_tuple (make_annot (Name (Id.of_string "c")) indr, None, indty) :: ctx in
   let argbinders, parambinders = List.chop (succ realdecls) ctx in
   let u = evd_comb0 (Evd.new_sort_variable Evd.univ_rigid) evd in
+  let sigma, u_sort =
+    let super_u = ESorts.super !evd u in
+    Evd.fresh_geq_sort !evd super_u
+  in
+  let () = evd := sigma in
   let ru = Retyping.relevance_of_sort u in
   let u = mkSort u in
   let arity = it_mkProd_or_LetIn u argbinders in
@@ -375,9 +381,9 @@ let derive_below env sigma ~poly (ind,univ as indu) =
         (nargs, bodyB, bodyb)) oneind.mind_nf_lc
     in
     let caseB =
-      mkCase (EConstr.contract_case env !evd (make_case_info env ind MatchStyle, (aritylam, ERelevance.relevant), NoInvert, mkRel 1, Array.map pi2 branches))
+      mkCase (EConstr.contract_case env !evd (make_case_info env ind MatchStyle, (aritylam, u_sort), NoInvert, mkRel 1, Array.map pi2 branches))
     and caseb =
-      mkCase (EConstr.contract_case env !evd (make_case_info env ind MatchStyle, (aritylamb, ERelevance.relevant), NoInvert, mkRel 1, Array.map pi3 branches))
+      mkCase (EConstr.contract_case env !evd (make_case_info env ind MatchStyle, (aritylamb, destSort !evd u), NoInvert, mkRel 1, Array.map pi3 branches))
     in 
       lift 2 (it_mkLambda_or_LetIn caseB argbinders), lift 3 (it_mkLambda_or_LetIn caseb argbinders)
   in

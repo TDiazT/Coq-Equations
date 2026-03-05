@@ -37,7 +37,7 @@ Proof.
 Defined.
 
 (** We rederive the UIP shifting proof transparently. *)
-Theorem UIP_shift_on@{i} (X : Type@{i}) (x : X) :
+Theorem UIP_shift_on@{i +} (X : Type@{i}) (x : X) :
   UIP_refl_on_ X x -> forall y : x = x, UIP_refl_on_ (x = x) y.
 Proof.
   intros UIP_refl y.
@@ -56,13 +56,13 @@ Proof.
     destruct z. destruct (UIP _ _). reflexivity.
 Defined.
 
-Theorem UIP_shift@{i} : forall {U : Type@{i}}, UIP_refl_@{i} U -> forall x:U, UIP_refl_@{i} (x = x).
+Theorem UIP_shift@{i +} : forall {U : Type@{i}}, UIP_refl_@{i} U -> forall x:U, UIP_refl_@{i} (x = x).
 Proof. exact (fun U UIP_refl x => @UIP_shift_on U x (UIP_refl x)). Defined.
 
 (** This is the reduction rule of UIP. *)
-Lemma uip_refl_refl@{i} {A : Type@{i}} {E : UIP@{i} A} (x : A) : uip (x:=x) 1 1 = 1.
+Lemma uip_refl_refl@{i +} {A : Type@{i}} {E : UIP@{i} A} (x : A) : uip (x:=x) 1 1 = 1.
 Proof.
-  apply UIP_shift@{i}.
+  apply UIP_shift@{i _}.
   intros y e. apply uip@{i}.
 Defined.
 

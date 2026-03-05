@@ -19,7 +19,7 @@ open Equations_common
 open EConstr
 open Vars
 
-let mkcase env sigma c ty constrs =
+let mkcase env sigma c ty annot constrs =
   let cty = Retyping.get_type_of env sigma c in
   let IndType (indf, _) as indty = Inductiveops.find_rectype env sigma cty in
   let mind, ind, origparams = match dest_ind_family indf with
@@ -44,7 +44,7 @@ let mkcase env sigma c ty constrs =
       it_mkLambda_or_LetIn res args)
       oneind.mind_consnames oneind.mind_nf_lc
   in
-    make_case_or_project env sigma indty ci (ty, ERelevance.relevant) c brs
+    make_case_or_project env sigma indty ci (ty, annot) c brs
 
 let mk_eq env env' evd args args' =
   let _, _, make = Sigma_types.telescope env evd args in
@@ -111,6 +111,12 @@ let derive_no_confusion ~pm env sigma0 ~poly (ind,u as indu) =
     mkApp (mkIndU indu, Array.append (Array.map (lift n) paramsvect) rest) 
   in
   let lenindices = List.length argsctx in
+  let super = ESorts.super !evd (destSort !evd s) in
+  let evd', inner_match_sort = Evd.fresh_geq_sort !evd super in
+  let () = evd := evd' in
+  let outer_match_sort = ESorts.make (Typeops.sort_of_product env (ESorts.kind !evd inds) (ESorts.kind !evd super)) in
+  let evd', outer_match_sort = Evd.fresh_geq_sort !evd outer_match_sort in
+  let () = evd := evd' in
   let pred =
     let elim =
       (* In pars ; x |- fun args (x : ind pars args) => forall y, Prop *)
@@ -120,14 +126,14 @@ let derive_no_confusion ~pm env sigma0 ~poly (ind,u as indu) =
           (of_tuple (nameR xid, None, ind_with_parlift (lenindices + 1)) ::
              lift_rel_context 1 argsctx)
     in
-      mkcase env !evd x elim (fun ind i id nparams args arity ->
+      mkcase env !evd x elim outer_match_sort (fun ind i id nparams args arity ->
         let ydecl = (nameR yid, None, pack_ind_with_parlift (List.length args + 1)) in
         let env' = push_rel_context (of_tuple ydecl :: args) env in
         let argsctx = lift_rel_context (List.length args + 2) argsctx in
         let elimdecl = (nameR yid, None, ind_with_parlift (List.length args + lenindices + 2)) in
 	        mkLambda_or_LetIn (of_tuple ydecl)
             (mkcase env' !evd x
-	        (it_mkLambda_or_LetIn s (of_tuple elimdecl :: argsctx))
+	        (it_mkLambda_or_LetIn s (of_tuple elimdecl :: argsctx)) inner_match_sort
 	        (fun _ i' id' nparams args' arity' ->
 	          if i = i' then
 	            if List.length args = 0 then tru

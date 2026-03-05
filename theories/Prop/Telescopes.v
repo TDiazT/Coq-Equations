@@ -131,9 +131,9 @@ Register tele_sigma as equations.tele.interp.
 Register tele_measure as equations.tele.measure.
 
 #[export]
-Instance wf_tele_measure@{i j k}
-         {T : tele@{i}} (A : Type@{j}) (f : tele_fn@{i j k} T A) (R : A -> A -> Prop) :
-  WellFounded R -> WellFounded (tele_measure@{i j k} T A f R).
+Instance wf_tele_measure@{i j k +}
+         {T : tele@{i}} (A : Type@{j}) (f : tele_fn@{i j k _} T A) (R : A -> A -> Prop) :
+         WellFounded R -> WellFounded (tele_measure@{i j k _ _ _} T A f R).
 Proof.
   intros. apply Program.Wf.measure_wf. apply H.
 Defined.
@@ -142,7 +142,7 @@ Section Fix.
   Universe i j k.
   Context {T : tele@{i}} (R : T -> T -> Prop).
   Context (wf : WellFounded R).
-  Context (P : tele_type@{i j k} T).
+  Context (P : tele_type@{i j k _} T).
 
   (* (forall x : A, (forall y : A, R y x -> P y) -> P x) -> forall x : A, P x *)
   Definition tele_fix_functional_type :=
@@ -182,10 +182,10 @@ Section FixUnfold.
 
   Context {T : tele@{i}} (x : T) (R : T -> T -> Prop).
   Context (wf : well_founded R).
-  Context (P : tele_type@{i j k} T).
+  Context (P : tele_type@{i j k _} T).
 
   (* (forall x : A, (forall y : A, R y x -> P y) -> P x) -> forall x : A, P x *)
-  Context (fn : tele_fix_functional_type@{i j k} R P).
+  Context (fn : tele_fix_functional_type@{i j k _ _ _} R P).
 
   Lemma tele_fix_unfold :
     tele_forall_app T P (tele_fix R wf P fn) x =
@@ -193,9 +193,9 @@ Section FixUnfold.
                      (tele_forall_unpack T _ (fun y _ => tele_forall_app T P (tele_fix R wf P fn) y)).
   Proof.
     intros. unfold tele_fix, Subterm.FixWf, Fix.
-    rewrite tele_forall_app_type@{i j k}. destruct (wellfounded x). simpl.
+    rewrite tele_forall_app_type@{i j k _ _ _}. destruct (wellfounded x). simpl.
     apply poly_f_equal@{k k}. apply poly_f_equal@{k k}. extensionality y. extensionality h.
-    rewrite tele_forall_app_type@{i j k}. apply poly_f_equal@{k k}. apply Subterm.Acc_pi.
+    rewrite tele_forall_app_type@{i j k _ _ _}. apply poly_f_equal@{k k}. apply Subterm.Acc_pi.
   Defined.
 
 End FixUnfold.

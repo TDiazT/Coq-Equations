@@ -14,6 +14,7 @@ val mkcase :
   env -> Evd.evar_map ->
   constr ->
   constr ->
+  ESorts.t ->
   ((MutInd.t * int) * EInstance.t ->
    int ->
    Id.t -> int -> rel_context -> types -> constr) ->
