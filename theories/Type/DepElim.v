@@ -205,7 +205,7 @@ Lemma simplification_sigma2_uip@{i j |} {A : Type@{i}} {uip : UIP A} {P : A -> T
   (x = y -> B) -> ((p , x) = (p, y) -> B).
 Proof. intros t e. apply t. exact (pr2_uip@{i} e). Defined.
 
- Lemma simplification_sigma2_uip_refl@{i j|} :
+Lemma simplification_sigma2_uip_refl@{i j +|+} :
   forall {A : Type@{i}} {uip:UIP A} {P : A -> Type@{i}} {B : Type@{j}}
     (p : A) (x : P p) (G : x = x -> B),
       @simplification_sigma2_uip A uip P B p x x G 1 = G 1.
@@ -221,7 +221,7 @@ Proof. apply UIP_K. Defined.
 
 Arguments simplification_K_uip : simpl never.
 
-Lemma simplification_K_uip_refl@{i j|} :
+Lemma simplification_K_uip_refl@{i j +|+} :
   forall {A : Type@{i}} `{UIP A} (x : A) {B : x = x -> Type@{j}}
          (p : B 1),
   simplification_K_uip x p 1 = p.
@@ -233,7 +233,7 @@ Defined.
 Definition ind_pack@{i|} {A : Type@{i}} {B : A -> Type@{i}} {x : A} {p q : B x} (e : p = q) :
   @Id (sigma (fun x => B x)) (x, p) (x, q) := (pr2_inv_uip e).
 
-Definition ind_pack_inv_equiv@{i|} {A : Type@{i}} {uip : UIP A}
+Definition ind_pack_inv_equiv@{i +|+} {A : Type@{i}} {uip : UIP A}
            {B : A -> Type@{i}} {x : A} (p q : B x) (e : p = q) :
   pr2_uip (pr2_inv_uip e) = e.
 Proof.
@@ -247,7 +247,7 @@ Arguments opaque_ind_pack_inv : simpl never.
 Arguments pr2_uip : simpl never.
 Arguments pr2_inv_uip : simpl never.
 
-Lemma simplify_ind_pack@{i j|} {A : Type@{i}} {uip : UIP A}
+Lemma simplify_ind_pack@{i j +|+} {A : Type@{i}} {uip : UIP A}
       (B : A -> Type@{i}) (x : A) (p q : B x) (G : p = q -> Type@{j}) :
       (forall e : (x, p) = (x, q), opaque_ind_pack_inv G e) ->
   (forall e : p = q, G e).
@@ -258,7 +258,7 @@ Proof.
 Defined.
 Arguments simplify_ind_pack : simpl never.
 
-Lemma simplify_ind_pack_inv@{i j|} {A : Type@{i}} {uip : UIP A}
+Lemma simplify_ind_pack_inv@{i j +|+} {A : Type@{i}} {uip : UIP A}
       (B : A -> Type@{i}) (x : A) (p : B x) (G : p = p -> Type@{j}) :
   G 1 -> opaque_ind_pack_inv G 1.
 Proof.
@@ -267,14 +267,14 @@ Defined.
 Arguments simplify_ind_pack_inv : simpl never.
 
 
-Definition simplified_ind_pack@{i j|} {A : Type@{i}} {uip : UIP A}
+Definition simplified_ind_pack@{i j +|+} {A : Type@{i}} {uip : UIP A}
   (B : A -> Type@{i}) (x : A) (p : B x) (G : p = p -> Type@{j})
   (t : opaque_ind_pack_inv G 1) :=
   Id_rew _ G t _ (@pr2_uip_refl A uip B x p).
 Arguments simplified_ind_pack : simpl never.
 
 
-Lemma simplify_ind_pack_refl@{i j|} {A : Type@{i}} {uip : UIP A}
+Lemma simplify_ind_pack_refl@{i j +|+} {A : Type@{i}} {uip : UIP A}
 (B : A -> Type@{i}) (x : A) (p : B x) (G : p = p -> Type@{j})
 (t : forall (e : (x, p) = (x, p)), opaque_ind_pack_inv G e) :
   simplify_ind_pack B x p p G t 1 =
@@ -282,7 +282,7 @@ Lemma simplify_ind_pack_refl@{i j|} {A : Type@{i}} {uip : UIP A}
 Proof. reflexivity. Qed.
 
 
-Lemma simplify_ind_pack_elim@{i j|} {A : Type@{i}} {uip : UIP A}
+Lemma simplify_ind_pack_elim@{i j +|+} {A : Type@{i}} {uip : UIP A}
   (B : A -> Type@{i}) (x : A) (p : B x) (G : p = p -> Type@{j})
   (t : G 1) :
   simplified_ind_pack B x p G (simplify_ind_pack_inv B x p G t) = t.

@@ -696,8 +696,13 @@ let term_of_tree env0 isevar sort tree =
       (* Build the case. *)
       let case_info = Inductiveops.make_case_info env (fst pind) Constr.MatchStyle in
       let indty = Inductiveops.find_rectype env !evd (mkApp (mkIndU pind, Array.of_list args)) in
+        let env_ctx = push_rel_context ctx env in
+      let evm, s = Typing.check_allowed_sort env_ctx !evd pind rel_t case_ty in
+      let () = evd := evm in
+      let evm, sort_annot = Evd.fresh_geq_sort !evd s in
+      let () = evd := evm in
       let case = Inductiveops.make_case_or_project env !evd indty case_info
-          (case_ty, sort) rel_t branches in
+          (case_ty, sort_annot) rel_t branches in
       let term = EConstr.mkApp (case, Array.of_list to_apply) in
       let term = EConstr.it_mkLambda_or_LetIn term ctx in
       let typ = it_mkProd_or_subst env evm ty ctx in

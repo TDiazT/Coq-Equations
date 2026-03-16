@@ -193,9 +193,9 @@ Section FixUnfold.
                      (tele_forall_unpack T _ (fun y _ => tele_forall_app T P (tele_fix R wf P fn) y)).
   Proof.
     intros. unfold tele_fix, Subterm.FixWf, Fix.
-    rewrite tele_forall_app_type@{i j k _ _ _}. destruct (wellfounded x). simpl.
+    rewrite tele_forall_app_type@{i j k _ _ }. destruct (wellfounded x). simpl.
     apply poly_f_equal@{k k}. apply poly_f_equal@{k k}. extensionality y. extensionality h.
-    rewrite tele_forall_app_type@{i j k _ _ _}. apply poly_f_equal@{k k}. apply Subterm.Acc_pi.
+    rewrite tele_forall_app_type@{i j k _ _ }. apply poly_f_equal@{k k}. apply Subterm.Acc_pi.
   Defined.
 
 End FixUnfold.

@@ -137,8 +137,8 @@ Register tele_sigma as equations.tele.interp.
 Register tele_measure as equations.tele.measure.
 
 #[export]
-Instance wf_tele_measure@{i j k| i <= k, j <= k}
-         {T : tele@{i}} (A : Type@{j}) (f : tele_fn@{i j k} T A) (R : A -> A -> Type@{k}) :
+Instance wf_tele_measure@{i j k +| i <= k, j <= k +}
+         {T : tele@{i}} (A : Type@{j}) (f : tele_fn@{i j k _} T A) (R : A -> A -> Type@{k}) :
   WellFounded R -> WellFounded (tele_measure T A f R) | (WellFounded (tele_measure _ _ _ _)).
 Proof.
   intros. apply wf_inverse_image@{i j k k}. apply X.
@@ -152,12 +152,12 @@ Section Fix.
 
   Context {T : tele@{i}} (R : T -> T -> Type@{j}).
   Context (wf : WellFounded R).
-  Context (P : tele_type@{i k l} T).
+  Context (P : tele_type@{i k l _} T).
 
   (* (forall x : A, (forall y : A, R y x -> P y) -> P x) -> forall x : A, P x *)
   Definition tele_fix_functional_type :=
-    tele_forall_uncurry@{i m m} T (fun x =>
-      ((tele_forall_uncurry@{i m m} T (fun y =>
+    tele_forall_uncurry@{i m m _ _} T (fun x =>
+      ((tele_forall_uncurry@{i m m _ _} T (fun y =>
          R y x -> tele_type_app T P y))) ->
       tele_type_app T P x).
 
@@ -190,10 +190,10 @@ Section FixUnfold.
 
   Context {T : tele@{i}} (x : T) (R : T -> T -> Type@{j}).
   Context (wf : well_founded R).
-  Context (P : tele_type@{i k l} T).
+  Context (P : tele_type@{i k l _} T).
 
   (* (forall x : A, (forall y : A, R y x -> P y) -> P x) -> forall x : A, P x *)
-  Context (fn : tele_fix_functional_type@{i j k l m} R P).
+  Context (fn : tele_fix_functional_type@{i j k l m _ _ _} R P).
 
   Lemma tele_fix_unfold :
     tele_forall_app T P (tele_fix R wf P fn) x =
@@ -201,7 +201,7 @@ Section FixUnfold.
                      (tele_forall_unpack T _ (fun y _ => tele_forall_app T P (tele_fix R wf P fn) y)).
   Proof.
     intros. unfold tele_fix, Subterm.FixWf, Fix.
-    rewrite tele_forall_app_type@{i k l}. destruct (wellfounded x). simpl.
+    rewrite tele_forall_app_type@{i k l _ _}. destruct (wellfounded x). simpl.
     apply ap. apply ap. apply funext. intros y. apply funext; intros h.
     eapply id_trans. 2:{ apply id_sym. apply tele_forall_app_type. }
     apply ap@{l l}. apply Acc_prop.

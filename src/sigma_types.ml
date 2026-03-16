@@ -99,7 +99,8 @@ let telescope_intro env sigma len tele =
 
 let telescope_of_context env sigma ctx =
   let sigma, teleinterp = new_global sigma (Lazy.force logic_tele_interp) in
-  let _, u = destConst sigma teleinterp in
+  let sigma, tele_type_term = new_global sigma (Lazy.force logic_tele_type) in
+  let _, u = destInd sigma tele_type_term in
   let rec aux = function
     | [] -> raise (Invalid_argument "Cannot make telescope out of empty context")
     | [decl] ->
@@ -111,6 +112,9 @@ let telescope_of_context env sigma ctx =
   let tele = aux (List.rev ctx) in
   let tele_interp = mkApp (teleinterp, [| tele |]) in
   (* Infer universe constraints *)
+  let () =
+      Pp.pp_with Format.err_formatter @@ Printer.pr_econstr_env env sigma tele_interp
+  in
   let sigma, _ = Typing.type_of env sigma tele_interp in
   sigma, tele, tele_interp
 
